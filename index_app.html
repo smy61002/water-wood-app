@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zeo露營準備清單 V3 (手機優化版)</title>
+
+<style>
+/* 全域設定，確保寬度計算包含 padding */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 15px;
+    background: #edf3f8;
+    font-family: "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #2c6e49;
+    font-size: 24px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 20px;
+    margin-top: 0;
+    color: #1d3557;
+}
+
+.trip-box {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.trip-box input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px; /* 16px 可防止 iOS 自動放大畫面 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* 桌面版預設三欄並排 */
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.left,
+.middle,
+.right {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.left { width: 28%; }
+.middle { width: 36%; }
+.right { width: 36%; }
+
+.left img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+}
+
+details {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+summary {
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #1d3557;
+    padding: 5px 0;
+    user-select: none;
+}
+
+/* 放大勾選項目，方便手指點擊 */
+label {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 17px;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    accent-color: #2c6e49;
+}
+
+/* 新增裝備輸入列 */
+.add-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.add-group input[type=text] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.add-group button {
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+button {
+    background: #2c6e49;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover, button:active {
+    background: #1f5136;
+}
+
+/* 主要功能按鈕群組 */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 手機與桌面都整齊兩兩並排 */
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-clear {
+    background: #d9534f;
+}
+.btn-clear:hover, .btn-clear:active {
+    background: #c9302c;
+}
+
+.counter {
+    color: #e63946;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#bag {
+    text-align: center;
+    font-size: 75px;
+    margin: 10px 0;
+}
+
+#result {
+    padding-left: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+textarea {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+/* 📱 手機版響應式設定 (螢幕寬度小於 768px 時套用) */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        flex-direction: column; /* 改為垂直堆疊 */
+        gap: 15px;
+    }
+
+    .left,
+    .middle,
+    .right {
+        width: 100%; /* 全部佔滿螢幕寬度 */
+        padding: 16px;
+    }
+
+    /* 手機版照片限制最大高度，避免滑太久才看到清單 */
+    .left img {
+        max-height: 220px;
+        object-fit: cover;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏕️ Zeo 露營準備清單</h1>
+
+<div class="trip-box">
+    <input type="text" id="tripName" placeholder="輸入行程名稱，例如：武陵農場二天一夜">
+</div>
+
+<div class="container">
+
+    <!-- 左側照片 -->
+    <div class="left">
+        <h2>📷 露營照片</h2>
+        <img src="waterWood.JPG" alt="露營風景照" onerror="this.style.display='none'; this.parentElement.innerHTML+='<p style=\'color:#888;text-align:center;\'>尚未載入圖片 (waterWood.JPG)</p>';">
+    </div>
+
+    <!-- 中間裝備勾選 -->
+    <div class="middle">
+
+        <details open>
+            <summary>🏕️ 過夜裝備</summary>
+            <div id="sleepGear">
+                <label><input type="checkbox" value="帳篷"> 帳篷</label>
+                <label><input type="checkbox" value="天幕"> 天幕</label>
+                <label><input type="checkbox" value="睡袋"> 睡袋</label>
+                <label><input type="checkbox" value="充氣床墊"> 充氣床墊</label>
+                <label><input type="checkbox" value="枕頭"> 枕頭</label>
+            </div>
+            <div class="add-group">
+                <input type="text" id="sleepInput" placeholder="新增過夜裝備">
+                <button onclick="addItem('sleepInput','sleepGear')">新增</button>
+            </div>
+        </details>
+
+        <details>
+            <summary>🎒 行動裝備</summary>
+            <div id="moveGear">
+                <label><input type="checkbox" value="背包"> 背包</label>
+                <label><input type="checkbox" value="頭燈"> 頭燈</label>
+                <label><input type="checkbox" value="手電筒"> 手電筒</label>
+                <label><input type="checkbox" value="行動電源"> 行動電源</label>
+            </div>
+            <div class="add-group">
+                <input type="text" id="moveInput" placeholder="新增行動裝備">
+                <button onclick="addItem('moveInput','moveGear')">新增</button>
+            </div>
+        </details>
+
+        <details>
+            <summary>🩹 急救裝備</summary>
+            <div id="medicalGear">
+                <label><input type="checkbox" value="OK蹦"> OK蹦</label>
+                <label><input type="checkbox" value="優碘"> 優碘</label>
+                <label><input type="checkbox" value="酒精棉片"> 酒精棉片</label>
+                <label><input type="checkbox" value="止痛藥"> 止痛藥</label>
+                <label><input type="checkbox" value="腸胃藥"> 腸胃藥</label>
+                <label><input type="checkbox" value="防蚊液"> 防蚊液</label>
+            </div>
+            <div class="add-group">
+                <input type="text" id="medicalInput" placeholder="新增急救裝備">
+                <button onclick="addItem('medicalInput','medicalGear')">新增</button>
+            </div>
+        </details>
+
+        <details>
+            <summary>🍖 食材清單</summary>
+            <div id="foodGear">
+                <label><input type="checkbox" value="牛肉"> 牛肉</label>
+                <label><input type="checkbox" value="豬肉"> 豬肉</label>
+                <label><input type="checkbox" value="雞肉"> 雞肉</label>
+                <label><input type="checkbox" value="泡麵"> 泡麵</label>
+                <label><input type="checkbox" value="礦泉水"> 礦泉水</label>
+                <label><input type="checkbox" value="飲料"> 飲料</label>
+                <label><input type="checkbox" value="木炭"> 木炭</label>
+            </div>
+            <div class="add-group">
+                <input type="text" id="foodInput" placeholder="新增食材">
+                <button onclick="addItem('foodInput','foodGear')">新增</button>
+            </div>
+        </details>
+
+        <div class="action-buttons">
+            <button onclick="addToList()">✅ 加入準備清單</button>
+            <button onclick="exportText()">📋 輸出文字</button>
+            <button onclick="copyText()">📄 一鍵複製</button>
+            <button class="btn-clear" onclick="clearList()">❌ 清空</button>
+        </div>
+
+    </div>
+
+    <!-- 右側結果與輸出 -->
+    <div class="right" id="resultSection">
+        <h2 id="displayTrip">🎒 我的露營背包</h2>
+        <div id="bag">🎒</div>
+        <p>總件數：<span id="count" class="counter">0</span></p>
+        <ul id="result"></ul>
+
+        <hr>
+
+        <h3>📋 可複製文字</h3>
+        <textarea id="outputText" rows="10" placeholder="按下「輸出文字」後顯示於此，方便貼到 LINE 群組"></textarea>
+    </div>
+
+</div>
+
+<script>
+function addItem(inputId, containerId) {
+    let input = document.getElementById(inputId);
+    let value = input.value.trim();
+
+    if (value === "") {
+        return;
+    }
+
+    let container = document.getElementById(containerId);
+    // 使用 insertAdjacentHTML 避免新增項目時把前面已勾選的狀態重置
+    let newLabel = `<label><input type="checkbox" value="${value}" checked> ${value}</label>`;
+    container.insertAdjacentHTML('beforeend', newLabel);
+
+    input.value = "";
+}
+
+function addToList() {
+    let tripName = document.getElementById("tripName").value.trim();
+
+    if (tripName !== "") {
+        document.getElementById("displayTrip").innerHTML = "🏕️ " + tripName;
+    } else {
+        document.getElementById("displayTrip").innerHTML = "🎒 我的露營背包";
+    }
+
+    let result = document.getElementById("result");
+    let count = document.getElementById("count");
+    result.innerHTML = "";
+
+    let checkedItems = document.querySelectorAll("input[type='checkbox']:checked");
+
+    checkedItems.forEach(function(item) {
+        result.innerHTML += "<li>✅ " + item.value + "</li>";
+    });
+
+    count.innerHTML = checkedItems.length;
+
+    if (checkedItems.length > 0) {
+        document.getElementById("bag").innerHTML = "🧳";
+    } else {
+        document.getElementById("bag").innerHTML = "🎒";
+    }
+
+    // 手機版自動平滑捲動到下方結果區，讓使用者知道已更新
+    if (window.innerWidth <= 768) {
+        document.getElementById("resultSection").scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+function exportText() {
+    addToList(); // 輸出文字時順便同步更新上方清單
+
+    let tripName = document.getElementById("tripName").value.trim();
+    let checkedItems = document.querySelectorAll("input[type='checkbox']:checked");
+    let text = "";
+
+    if (tripName !== "") {
+        text += "🏕️ " + tripName + "\n\n";
+    } else {
+        text += "🏕️ Zeo露營準備清單\n\n";
+    }
+
+    checkedItems.forEach(function(item) {
+        text += "✅ " + item.value + "\n";
+    });
+
+    text += `\n共計：${checkedItems.length} 件裝備`;
+
+    document.getElementById("outputText").value = text;
+}
+
+function copyText() {
+    let textArea = document.getElementById("outputText");
+    
+    if (textArea.value.trim() === "") {
+        exportText(); // 如果還沒按輸出文字，自動幫忙產生再複製
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textArea.value).then(() => {
+            alert("✅ 已複製到剪貼簿，可直接貼到 LINE 囉！");
+        });
+    } else {
+        // 相容部分手機瀏覽器直接開啟本地檔案的複製方式
+        textArea.select();
+        document.execCommand("copy");
+        alert("✅ 已複製到剪貼簿！");
+    }
+}
+
+function clearList() {
+    if (!confirm("確定要清空所有勾選與內容嗎？")) {
+        return;
+    }
+
+    let checks = document.querySelectorAll("input[type='checkbox']");
+    checks.forEach(function(item) {
+        item.checked = false;
+    });
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("count").innerHTML = "0";
+    document.getElementById("outputText").value = "";
+    document.getElementById("tripName").value = "";
+    document.getElementById("displayTrip").innerHTML = "🎒 我的露營背包";
+    document.getElementById("bag").innerHTML = "🎒";
+}
+</script>
+
+</body>
+</html>
